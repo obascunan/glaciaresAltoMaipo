@@ -52,9 +52,23 @@
 
     proj4.defs("EPSG:32617", "+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs");
 
-    let glacierData = [];
+    const {DeckGL, GeoJsonLayer} = deck;
 
-    const {DeckGL, GeoJsonLayer, ScatterplotLayer} = deck;
+    const glacierLayer = new GeoJsonLayer({
+      id: 'glacier-geojson',
+      data: 'https://obascunan.github.io/glaciaresAltoMaipo/glaciares_rm/glaciares_rm.geojson',
+      opacity: 1,
+      stroked: false,
+      filled: false,
+      lineWidthMinPixels: 1,
+      parameters: {
+        depthTest: false
+      },
+
+      getLineColor: [300,103,23],
+      getLineWidth: 5,
+
+    });
 
     const deckgl = new DeckGL({
       mapboxApiAccessToken: 'pk.eyJ1Ijoibm90Ymxvb20iLCJhIjoiY2pyaWVua3gzMDA4ODN5bXl0ZTU1ejgyOCJ9.e6_za1_NqG7xddmPCXxBAQ',
@@ -65,7 +79,8 @@
       zoom: 6,
       minZoom: 5,
       maxZoom: 15,
-      pitch: 40.5
+      pitch: 40.5,
+      layers: [glacierLayer]
     });
 
 
@@ -93,29 +108,8 @@
         return p;
     }
 
-    function getGlacierLayer(data){
-      return new GeoJsonLayer({
-        id: 'glacier-geojson',
-        data: data,
-        opacity: 1,
-        stroked: false,
-        filled: false,
-        lineWidthMinPixels: 1,
-        parameters: {
-          depthTest: false
-        },
 
-        getLineColor: [300,103,23],
-        getLineWidth: 5,
 
-      });
-    }
-
-    shapefile.open("https://obascunan.github.io/glaciaresAltoMaipo/glaciares_rm/Glaciares_RM.shp")
-  .then(source => {
-    glacierData = source;
-    renderLayers();
-  });
 
   </script>
 </html>
