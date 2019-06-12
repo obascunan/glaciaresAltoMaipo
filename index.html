@@ -60,8 +60,8 @@
       mapboxApiAccessToken: 'pk.eyJ1Ijoibm90Ymxvb20iLCJhIjoiY2pyaWVua3gzMDA4ODN5bXl0ZTU1ejgyOCJ9.e6_za1_NqG7xddmPCXxBAQ',
       mapStyle: 'mapbox://styles/mapbox/dark-v9',
       container: 'mapContainer',
-      longitude: -1.4157,
-      latitude: 52.2324,
+      longitude: -33.49,
+      latitude: -70.31,
       zoom: 6,
       minZoom: 5,
       maxZoom: 15,
@@ -115,8 +115,7 @@
   .then(source => {
     glacierData = source;
     renderLayers();
-  })
-  .catch(error => console.error(error.stack));
+  });
 
   </script>
 </html>
