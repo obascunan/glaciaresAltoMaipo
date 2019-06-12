@@ -54,6 +54,35 @@
 
     const {DeckGL, GeoJsonLayer} = deck;
 
+    const glacierColors = [
+      [255, 255, 204],
+      [199, 233, 180],
+      [127, 205, 187],
+      [65, 182, 196],
+      [29, 145, 192],
+      [34, 94, 168],
+      [12, 44, 132]
+    ];
+
+    function calcLineColor(f){
+      switch (f.properties.CLASIFICA) {
+        case "GLACIAR ROCOSO":
+          return glacierColors[0];
+          break;
+        case "GLACIARETE":
+          return glacierColors[1];
+          break;
+        case "GLACIAR DE VALLE":
+          return glacierColors[2];
+          break;
+        case "GLACIAR DE MONTAÑA":
+          return glacierColors[3];
+          break;
+        default:
+          return glacierColors[0];
+      }
+    }
+
     const glacierLayer = new GeoJsonLayer({
       id: 'glacier-geojson',
       data: 'https://obascunan.github.io/glaciaresAltoMaipo/glaciares_rm/glaciares_rm.geojson',
