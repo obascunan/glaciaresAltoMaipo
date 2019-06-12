@@ -101,14 +101,11 @@
       stroked: true,
       filled: true,
       lineWidthMinPixels: 1,
-      parameters: {
-        depthTest: false
-      },
 
       getLineColor: calcLineColor,
       getLineWidth: 5,
       getFillColor: [100, 200, 255],
-
+      pickable: true,
       onHover: updateTooltip
 
     });
@@ -123,6 +120,7 @@
       minZoom: 5,
       maxZoom: 15,
       pitch: 40.5,
+      bearing: 30,
       layers: [glacierLayer]
     });
 
