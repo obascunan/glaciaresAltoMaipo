@@ -50,7 +50,7 @@
 
   <script type="text/javascript">
 
-    proj4.defs("EPSG:32617", "+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs");
+  //  proj4.defs("EPSG:32617", "+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs");
 
     const {DeckGL, GeoJsonLayer} = deck;
 
@@ -83,9 +83,6 @@
       layers: [glacierLayer]
     });
 
-
-    let data = null;
-
     const COLOR_RANGE = [
       [1, 152, 189],
       [73, 227, 206],
@@ -94,20 +91,6 @@
       [254, 173, 84],
       [209, 55, 78]
     ];
-
-    function renderLayers () {
-      const glacier = new getGlacierLayer(glacierData);
-      deckgl.setProps({
-        layers: [glacier]
-      });
-    }
-
-    function getGPSPos(d){
-        var p = proj4("EPSG:32617", 'WGS84', [d.properties.X, d.properties.Y]);
-        p[2] = 0;
-        return p;
-    }
-
 
 
 
