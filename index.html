@@ -43,37 +43,23 @@
   </head>
 
   <body>
-    <div id="control-panel">
-      <div>
-        <label>Radius</label>
-        <input id="radius" type="range" min="1000" max="20000" step="1000" value="1000"></input>
-        <span id="radius-value"></span>
-      </div>
-      <div>
-        <label>Coverage</label>
-        <input id="coverage" type="range" min="0" max="1" step="0.1" value="1"></input>
-        <span id="coverage-value"></span>
-      </div>
-      <div>
-        <label>Upper Percentile</label>
-        <input id="upperPercentile" type="range" min="90" max="100" step="1" value="100"></input>
-        <span id="upperPercentile-value"></span>
-      </div>
-    </div>
+    <div id="tooltip"></div>
+    <div id="mapContainer"></div>
+    <div id="example-table"></div>
   </body>
 
   <script type="text/javascript">
 
     proj4.defs("EPSG:32617", "+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs");
 
-    let nodeData = [];//[[43.6, -79.3]];
-    let lineData = [];
+    let glacierData = [];
 
     const {DeckGL, GeoJsonLayer, ScatterplotLayer} = deck;
 
     const deckgl = new DeckGL({
       mapboxApiAccessToken: 'pk.eyJ1Ijoibm90Ymxvb20iLCJhIjoiY2pyaWVua3gzMDA4ODN5bXl0ZTU1ejgyOCJ9.e6_za1_NqG7xddmPCXxBAQ',
       mapStyle: 'mapbox://styles/mapbox/dark-v9',
+      container: 'mapContainer',
       longitude: -1.4157,
       latitude: 52.2324,
       zoom: 6,
@@ -83,11 +69,7 @@
     });
 
 
-
-
     let data = null;
-
-    const OPTIONS = ['radius', 'coverage', 'upperPercentile'];
 
     const COLOR_RANGE = [
       [1, 152, 189],
@@ -98,33 +80,11 @@
       [209, 55, 78]
     ];
 
-    OPTIONS.forEach(key => {
-      document.getElementById(key).oninput = renderLayer;
-    });
-
     function renderLayer () {
-      const options = {};
-      OPTIONS.forEach(key => {
-        const value = document.getElementById(key).value;
-        document.getElementById(key + '-value').innerHTML = value;
-        options[key] = Number(value);
+      const glacier = new getGlacierLayer(glacierData);
+      deckgl.setProps({
+        layers: [glacier]
       });
-
-      const hexagonLayer = new HexagonLayer({
-        id: 'heatmap',
-        colorRange: COLOR_RANGE,
-        data,
-        elevationRange: [0, 1000],
-        elevationScale: 250,
-        extruded: true,
-        getPosition: d => d,
-        opacity: 1,
-        ...options
-      });
-
-      // deckgl.setProps({
-      //   layers: [hexagonLayer]
-      // });
     }
 
     function getGPSPos(d){
@@ -133,20 +93,9 @@
         return p;
     }
 
-    function getScatterplotLayer(data) {
-      return new ScatterplotLayer({
-         id: 'scatter-plot',
-         data: data,
-         radiusScale: 10,
-         radiusMinPixels: 0.5,
-         getPosition: getGPSPos, //d =>  [d.properties.X, d.properties.Y, 0], //getGPSPos
-         getColor: [216, 254, 181] // d => (d[2] === 1 ? MALE_COLOR : FEMALE_COLOR)
-       });
-    }
-
-    function getLineLayer(data){
+    function getGlacierLayer(data){
       return new GeoJsonLayer({
-        id: 'geojson',
+        id: 'glacier-geojson',
         data: data,
         opacity: 1,
         stroked: false,
@@ -159,63 +108,14 @@
         getLineColor: [300,103,23],
         getLineWidth: 5,
 
-        //pickable: true,
-        //onHover: updateTooltip,
-        //
-        // updateTriggers: {
-        //   getLineColor: {year},
-        //   getLineWidth: {year}
-        // },
-        //
-        // transitions: {
-        //   getLineColor: 1000,
-        //   getLineWidth: 1000
-        // }
       });
     }
 
-
-    d3.csv('https://raw.githubusercontent.com/uber-common/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv')
-      .then(response => {
-      data = response.map(d => [Number(d.lng), Number(d.lat)]);
-    //  renderLayer();
-    });
-
-    function addToNodeData(item){
-      nodeData.push(item);
-    }
-
-    shapefile.open("https://obascunan.github.io/completeStreetsVisualization/data/emme_nodes.shp")
-  .then(source => source.read()
-    .then(function log(result) {
-      if (result.done){
-        console.log(nodeData);
-        const newScatterplot = getScatterplotLayer(nodeData);
-        deckgl.setProps({ layers: [newScatterplot] });
-        return;
-      }
-    //  console.log(result.value);
-      addToNodeData(result.value);
-      //nodeData.push(result.value);
-      return source.read().then(log);
-    }))
-  .catch(error => console.error(error.stack));
-
-
-    shapefile.open("https://obascunan.github.io/completeStreetsVisualization/data/emme_tlines.shp")
-  .then(source => source.read()
-    .then(function log(result) {
-      if (result.done){
-        console.log(nodeData);
-        const newScatterplot = getScatterplotLayer(nodeData);
-        deckgl.setProps({ layers: [newScatterplot] });
-        return;
-      }
-    //  console.log(result.value);
-      addToNodeData(result.value);
-      //nodeData.push(result.value);
-      return source.read().then(log);
-    }))
+    shapefile.open("https://obascunan.github.io/glaciaresAltoMaipo/glaciares_rm/Glaciares_RM.shp")
+  .then(source => {
+    glacierData = source;
+    renderLayers();
+  })
   .catch(error => console.error(error.stack));
 
   </script>
